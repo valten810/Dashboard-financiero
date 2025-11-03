@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dashboard Financiero</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="cerdofavicon.png">
+</head>
+<body>
+    <header>
+        <h1 class="title">Dashboard Financiero</h1>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- Formulario -->
+            <section class="card formulario">
+                <h2 class="card-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Agregar Gasto
+                </h2>
+                <form class="form" id="form">
+                    <input 
+                        type="text" 
+                        placeholder="Nombre/descripción del gasto" 
+                        id="nombre"
+                        autocomplete="off"
+                    >
+                    <input 
+                        type="number" 
+                        step="0.01" 
+                        placeholder="Monto" 
+                        id="monto"
+                        autocomplete="off"
+                    >
+                    <input 
+                        type="text" 
+                        placeholder="Categoría (ej: Comida, Transporte)" 
+                        id="categoria"
+                        list="categorias-sugeridas"
+                        autocomplete="off"
+                    >
+                    <datalist id="categorias-sugeridas"></datalist>
+                    <input 
+                        type="date" 
+                        id="fecha"
+                    >
+                    <button type="submit" class="btn-primary">
+                        <svg class="icon-btn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Agregar Gasto
+                    </button>
+                </form>
+            </section>
+
+            <!-- Resumen -->
+            <section class="card resumen">
+                <h2 class="card-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
+                        <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
+                    </svg>
+                    Resumen de Gastos
+                </h2>
+                
+                <div class="resumen-stats">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <svg class="icon-small" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="1" x2="12" y2="23"></line>
+                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                            </svg>
+                            <h3>Total Gastado</h3>
+                        </div>
+                        <p class="stat-value" id="total-gastado">$0.00</p>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <svg class="icon-small" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg>
+                            <h3>Cantidad</h3>
+                        </div>
+                        <p class="stat-value" id="cantidad-gastos">0</p>
+                    </div>
+                </div>
+
+                <div class="grafico-container">
+                    <canvas id="grafico"></canvas>
+                </div>
+
+                <div id="resumen-categorias" class="resumen-categorias"></div>
+            </section>
+        </div>
+
+        <!-- Lista de gastos -->
+        <section class="lista-section">
+            <h3 class="section-title">Lista de Gastos</h3>
+
+            <!-- Filtros -->
+            <div class="filtros">
+                <div class="filtro-group">
+                    <label for="filtro-categoria">
+                        <svg class="icon-small" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                        </svg>
+                        Categoría:
+                    </label>
+                    <select id="filtro-categoria">
+                        <option value="Todas">Todas</option>
+                    </select>
+                </div>
+
+                <div class="filtro-group">
+                    <label for="buscador-nombre">
+                        <svg class="icon-small" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                        Buscar:
+                    </label>
+                    <input 
+                        id="buscador-nombre" 
+                        type="search" 
+                        placeholder="Buscar por nombre..."
+                        autocomplete="off"
+                    >
+                </div>
+
+                <button id="btn-limpiar-filtros" class="btn-secondary">
+                    Limpiar filtros
+                </button>
+            </div>
+
+            <!-- Lista -->
+            <div class="lista-container">
+                <ol id="lista-gastos"></ol>
+                <div id="mensaje-vacio" class="mensaje-vacio">
+                    <svg class="icon-large" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <p>No se encontraron gastos</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
